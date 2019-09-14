@@ -1,6 +1,8 @@
 using Unity.Entities;
 
-public class BoardState : IComponentData
+public struct BoardState : IComponentData
 {
     //このコンポーネントで盤面の状態を格納できるようにします
+
+    public bool EmitBoard;
 }

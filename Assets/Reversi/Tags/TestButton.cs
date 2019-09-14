@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-public class TestButton : IComponentData
+public struct TestButton : IComponentData
 {
     //テスト用のボタンタグです。
     //テスト段階ではこのタグのButtonNameでボタンを判断させます

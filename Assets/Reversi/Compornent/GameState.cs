@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-public class GameState : IComponentData
+public struct GameState : IComponentData
 {
     //ゲームが進行中なのか、終了しているのか格納します
     public bool IsActive;
