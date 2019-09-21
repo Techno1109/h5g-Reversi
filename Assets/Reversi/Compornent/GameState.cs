@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Tiny.Core2D;
 
 public struct GameState : IComponentData
 {

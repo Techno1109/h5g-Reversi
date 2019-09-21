@@ -5,6 +5,6 @@ public struct GridComp : IComponentData
 {
     public int2 GridNum;
 
-    //0＝空白　1＝白　2＝黒
+    //0＝空白　1＝黒　2＝白
     public int GridState;
 }
