@@ -16,12 +16,6 @@
             "orientation": 0,
             "renderMode": 0
         }, {
-            "$type": "BoardState, Reversi",
-            "EmitBoard": true
-        }, {
-            "$type": "GameState, Reversi",
-            "NowTurn": 1
-        }, {
             "$type": "Unity.Tiny.Scenes.Scenes, Unity.Tiny.Scenes",
             "Elements": [{
                 "SceneReference": {
@@ -41,10 +35,6 @@
                 "StableTypeHash": 7960064150805274675
             }, {
                 "StableTypeHash": 12662904853204722592
-            }, {
-                "StableTypeHash": 2117052814858197613
-            }, {
-                "StableTypeHash": 17447179265872892025
             }]
         }, {
             "$type": "Unity.Authoring.Core.ConfigurationTag, Unity.Authoring.Core"

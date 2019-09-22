@@ -1624,6 +1624,48 @@
         }]
     }, {
         "Components": [{
+            "$type": "Unity.Authoring.Core.SiblingIndex, Unity.Authoring.Core",
+            "Index": 2
+        }, {
+            "$type": "Unity.Entities.EntityGuid, Unity.Entities",
+            "a": 4273962194055220997,
+            "b": 9331716702930682574
+        }, {
+            "$type": "BoardState, Reversi"
+        }, {
+            "$type": "GameState, Reversi",
+            "NowTurn": 1
+        }, {
+            "$type": "Unity.Tiny.Core.EntityName, Unity.Tiny.Core",
+            "Elements": [{
+                "c": "C"
+            }, {
+                "c": "o"
+            }, {
+                "c": "n"
+            }, {
+                "c": "f"
+            }, {
+                "c": "i"
+            }, {
+                "c": "g"
+            }]
+        }, {
+            "$type": "Unity.Authoring.Core.ComponentOrder, Unity.Authoring.Core",
+            "Elements": [{
+                "StableTypeHash": 7960064150805274675
+            }, {
+                "StableTypeHash": 12662904853204722592
+            }, {
+                "StableTypeHash": 874803706151837934
+            }, {
+                "StableTypeHash": 2117052814858197613
+            }, {
+                "StableTypeHash": 17447179265872892025
+            }]
+        }]
+    }, {
+        "Components": [{
             "$type": "Unity.Tiny.UIControls.Button, Unity.Tiny.UIControls",
             "sprite2DRenderer": "72e918bea2894346918bff1e54f7897e",
             "transition": "72e918bea2894346918bff1e54f7897e"

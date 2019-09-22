@@ -6,6 +6,7 @@ using Unity.Tiny.UILayout;
 using Unity.Tiny.UIControls;
 using Unity.Mathematics;
 
+[UpdateAfter(typeof(IniBoard))]
 public class BoardMan : ComponentSystem
 {
     const int BoardSize = 8;
@@ -51,11 +52,18 @@ public class BoardMan : ComponentSystem
                     return;
                 }
 
-                var GameStats = World.TinyEnvironment();
-                var Config = GameStats.GetConfigData<GameState>();
-                SetGridData(GridData.GridNum,Config.NowTurn,ref GridDatas);
+                var Config = GetSingleton<GameState>();
 
-                Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+                if (CheckCanPut(GridData.GridNum,Config.NowTurn,ref GridDatas))
+                {
+                    SetGridData(GridData.GridNum, Config.NowTurn, ref GridDatas);
+
+                    Reverse(GridData.GridNum, Config.NowTurn, ref GridDatas);
+
+                    Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+
+                    SetSingleton<GameState>(Config);
+                }
             }
         });
 
@@ -118,6 +126,153 @@ public class BoardMan : ComponentSystem
         }
 
         return true;
+    }
+
+    //クリックされた場所に駒を設置できるかどうか返します
+    public bool CheckCanPut(int2 SetPos,int SetState ,ref NativeArray<Entity> Entities)
+    {
+        //１方向でも設置できればOK
+        //上
+        if(CheckPinch(SetPos,new int2(0,1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //下
+        if (CheckPinch(SetPos, new int2(0, -1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //左
+        if (CheckPinch(SetPos, new int2(-1, 0), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //右
+        if (CheckPinch(SetPos, new int2(1, 0), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //右上
+        if (CheckPinch(SetPos, new int2(1, 1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //右下
+        if (CheckPinch(SetPos, new int2(1, -1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //左上
+        if (CheckPinch(SetPos, new int2(-1, 1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+        //左下
+        if (CheckPinch(SetPos, new int2(-1, -1), SetState, 0, ref Entities))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    //挟んだ駒を反転します
+    public void Reverse(int2 SetPos, int SetState, ref NativeArray<Entity> Entities)
+    {
+        //上
+        CheckReverseState(SetPos, new int2(0, 1), SetState, 0, ref Entities);
+
+        //下
+        CheckReverseState(SetPos, new int2(0, -1), SetState, 0, ref Entities);
+
+        //左
+        CheckReverseState(SetPos, new int2(-1, 0), SetState, 0, ref Entities);
+
+        //右
+        CheckReverseState(SetPos, new int2(1, 0), SetState, 0, ref Entities);
+
+        //右上
+        CheckReverseState(SetPos, new int2(1, 1), SetState, 0, ref Entities);
+
+        //右下
+        CheckReverseState(SetPos, new int2(1, -1), SetState, 0, ref Entities);
+
+        //左上
+        CheckReverseState(SetPos, new int2(-1, 1), SetState, 0, ref Entities);
+
+        //左下
+        CheckReverseState(SetPos, new int2(-1, -1), SetState, 0, ref Entities);
+    }
+
+    //指定したグリッドのデータを取得します
+    public int GetGridData(int2 CheckPos, ref NativeArray<Entity> Entities)
+    {
+        if (CheckPos.x < BoardSize && CheckPos.y < BoardSize)
+        {
+            GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[CheckPos.x + (CheckPos.y * BoardSize)]);
+            return GridData.GridState;
+        }
+
+        return -1;
+    }
+
+    //指定ベクトル方向に挟めているのかチェックする
+    public bool CheckPinch(int2 CheckPos,int2 CheckVector,int BaseState , int Count,ref NativeArray<Entity> Entities)
+    {
+        if (!(CheckPos.x < BoardSize && CheckPos.y < BoardSize))
+        {
+            return false;
+        }
+
+        if(GetGridData(CheckPos+CheckVector,ref Entities) == BaseState)
+        {
+            if(Count>0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (GetGridData(CheckPos + CheckVector, ref Entities) == 0 || GetGridData(CheckPos + CheckVector, ref Entities) == -1)
+        {
+            return false;
+        }
+
+        return CheckPinch(CheckPos+CheckVector, CheckVector,BaseState,++Count,ref Entities);
+    }
+
+    //駒が挟めているかチェックして、挟めていたら反転させる
+    public bool CheckReverseState(int2 CheckPos, int2 CheckVector, int BaseState, int Count, ref NativeArray<Entity> Entities)
+    {
+        if (!(CheckPos.x < BoardSize && CheckPos.y < BoardSize))
+        {
+            return false;
+        }
+
+        if (GetGridData(CheckPos + CheckVector, ref Entities) == BaseState)
+        {
+            if (Count > 0)
+            {
+                SetGridData(CheckPos, BaseState, ref Entities);
+                return true;
+            }
+
+            return false;
+        }
+
+        if (GetGridData(CheckPos + CheckVector, ref Entities) == 0 || GetGridData(CheckPos + CheckVector, ref Entities) == -1)
+        {
+            return false;
+        }
+
+        if (CheckReverseState(CheckPos + CheckVector, CheckVector, BaseState, ++Count, ref Entities))
+        {
+            SetGridData(CheckPos,BaseState,ref Entities);
+            return true;
+        }
+
+        return false;
     }
 
     //盤面のデータを読み取り、色を再描画します。

@@ -36,32 +36,43 @@ public class IniBoard : ComponentSystem
 
     protected override void OnUpdate()
     {
-        var GameStats = World.TinyEnvironment();
-        var Config = GameStats.GetConfigData<BoardState>();
-        if (Config.EmitBoard==false)
+        if(HasSingleton<BoardState>()==false)
+        {
+            return;
+        }
+        var Config = GetSingleton<BoardState>();
+        if (GetSingleton<BoardState>().EmitBoard == false)
         {
             EmitBoard();
             Config.EmitBoard = true;
-            GameStats.SetConfigData(Config);
+            SetSingleton<BoardState>(Config);
         }
     }
 
     //î’ñ ÇçÏê¨ÇµÇ‹Ç∑
     public void EmitBoard()
     {
-        var GameStats = World.TinyEnvironment();
-        var Config = GameStats.GetConfigData<BoardState>();
-
-        Color TableColor_1=new Color(0.4366531f, 0.853f, 0.423941f);
-        Color TableColor_2=new Color(0.3252917f, 0.6886792f, 0.3151032f);
-
         Entities.With(GridEntity).ForEach((Entity EntityData, ref Sprite2DRenderer Sprite2D, ref GridComp GridData) =>
         {
-            int ColBaseNum = GridData.GridNum.y % 2 == 0 ? 0 : 1;
-
-            Sprite2D.color = (ColBaseNum + GridData.GridNum.x) % 2 > 0 ? TableColor_1 : TableColor_2;
-
             GridData.GridState = 0;
+            if ( (GridData.GridNum.y == 3 || GridData.GridNum.y == 4) && (GridData.GridNum.x == 3 || GridData.GridNum.x == 4))
+            {
+                if (GridData.GridNum.x == 3)
+                {
+                    GridData.GridState = 2;
+                }
+                if (GridData.GridNum.x == 4)
+                {
+                    GridData.GridState = 1;
+                }
+
+                if (GridData.GridNum.y == 4)
+                {
+                    GridData.GridState = GridData.GridState == 1 ? 2 : 1;
+                }
+            }
         });
+
+        EntityManager.World.GetExistingSystem<BoardMan>().RefreshBoardColor();
     }
 }
