@@ -43,14 +43,12 @@ public class IniBoard : ComponentSystem
         var Config = GetSingleton<BoardState>();
         if (GetSingleton<BoardState>().EmitBoard == false)
         {
-            EmitBoard();
-            Config.EmitBoard = true;
-            SetSingleton<BoardState>(Config);
+            InitBoard();
         }
     }
 
     //”Õ–Ê‚ðì¬‚µ‚Ü‚·
-    public void EmitBoard()
+    public void InitBoard()
     {
         Entities.With(GridEntity).ForEach((Entity EntityData, ref Sprite2DRenderer Sprite2D, ref GridComp GridData) =>
         {
@@ -72,6 +70,17 @@ public class IniBoard : ComponentSystem
                 }
             }
         });
+
+        var Config = GetSingleton<BoardState>();
+        Config.EmitBoard = true;
+        Config.WhiteCount = 0;
+        Config.BlackCount = 2;
+        SetSingleton<BoardState>(Config);
+
+        var State = GetSingleton<GameState>();
+        State.IsActive = true;
+        State.NowTurn = 0;
+        SetSingleton<GameState>(State);
 
         EntityManager.World.GetExistingSystem<BoardMan>().RefreshBoardColor();
     }

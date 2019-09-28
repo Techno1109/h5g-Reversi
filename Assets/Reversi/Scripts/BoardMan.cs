@@ -34,6 +34,13 @@ public class BoardMan : ComponentSystem
 
     protected override void OnUpdate()
     {
+        var State = GetSingleton<GameState>();
+
+        if (State.IsActive==false)
+        {
+            return;
+        }
+
         if( ! (GridEntity.CalculateLength() > 0) )
         {
             return;
@@ -54,16 +61,22 @@ public class BoardMan : ComponentSystem
 
                 var Config = GetSingleton<GameState>();
 
-                if (CheckCanPut(GridData.GridNum,Config.NowTurn,ref GridDatas))
+                if(GridData.GridState==3)
                 {
                     SetGridData(GridData.GridNum, Config.NowTurn, ref GridDatas);
 
                     Reverse(GridData.GridNum, Config.NowTurn, ref GridDatas);
 
-                    Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+                    if(CheckCanPut_AllGrid(ref Config,ref GridDatas))
+                    {
+                        Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+                    }
 
                     SetSingleton<GameState>(Config);
                 }
+
+                PawnCounter();
+                return;
             }
         });
 
@@ -95,12 +108,47 @@ public class BoardMan : ComponentSystem
         return true;
     }
 
+    //指定座標のEntityを取得します
+    public Entity GetGridEntity(int2 CheckPos, ref NativeArray<Entity> Entities)
+    {
+        if (CheckPos.x < 0 && CheckPos.y < 0)
+        {
+            return Entity.Null;
+        }
+
+        if (CheckPos.x < BoardSize && CheckPos.y < BoardSize)
+        {
+            return Entities[CheckPos.x + (CheckPos.y * BoardSize)];
+        }
+
+        return Entity.Null;
+    }
+
+    //指定したグリッドのデータを取得します
+    public int GetGridData(int2 CheckPos, ref NativeArray<Entity> Entities)
+    {
+        if (CheckPos.x < 0 && CheckPos.y < 0)
+        {
+            return -1;
+        }
+
+        if (CheckPos.x < BoardSize && CheckPos.y < BoardSize)
+        {
+            GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[CheckPos.x + (CheckPos.y * BoardSize)]);
+            return GridData.GridState;
+        }
+
+        return -1;
+    }
 
     //送られてきた座標にデータを書き換えます。
-    //どのくらいこの関数で機能を持たせるかわかりませんが、
-    //あくまでも書き込みだけで、駒の反転処理は別関数で行うかもしれません。
     public void SetGridData(int2 SetPos,int SetStatus,ref NativeArray<Entity> Entities)
     {
+        if (SetPos.x < 0 && SetPos.y < 0)
+        {
+            return;
+        }
+
         if (SetPos.x < BoardSize && SetPos.y < BoardSize)
         {
             GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[SetPos.x + (SetPos.y * BoardSize)]);
@@ -116,6 +164,10 @@ public class BoardMan : ComponentSystem
     //Falseの場合は置かれていない
     public bool CheckGridData(int2 SetPos,ref NativeArray<Entity> Entities)
     {
+        if(SetPos.x < 0 && SetPos.y < 0)
+        {
+            return true;
+        }
         if (SetPos.x < BoardSize && SetPos.y < BoardSize)
         {
             GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[SetPos.x + (SetPos.y * BoardSize)]);
@@ -175,6 +227,28 @@ public class BoardMan : ComponentSystem
 
         return false;
     }
+    //各種グリッドが設置可能かどうかを確認する
+    private bool CheckCanPut_AllGrid(ref GameState State, ref NativeArray<Entity> GridDatas)
+    {
+        bool CanPut = false;
+        for(int x=0;x<BoardSize;x++)
+        {
+            for(int y = 0; y < BoardSize; y++)
+            {
+                int2 TargetGrid = new int2(x, y);
+
+                if (CheckCanPut(TargetGrid, State.NowTurn, ref GridDatas))
+                {
+                    //設置可能の場合、マス目の状態を設置可能マスとして設定する
+                    CanPut |= true;
+                    SetGridData(TargetGrid, 3, ref GridDatas);
+                }
+            }
+        }
+
+        //どこかに設置できる時点で次のターンは有効と考えられる。
+        return CanPut;
+    }
 
     //挟んだ駒を反転します
     public void Reverse(int2 SetPos, int SetState, ref NativeArray<Entity> Entities)
@@ -204,21 +278,15 @@ public class BoardMan : ComponentSystem
         CheckReverseState(SetPos, new int2(-1, -1), SetState, 0, ref Entities);
     }
 
-    //指定したグリッドのデータを取得します
-    public int GetGridData(int2 CheckPos, ref NativeArray<Entity> Entities)
-    {
-        if (CheckPos.x < BoardSize && CheckPos.y < BoardSize)
-        {
-            GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[CheckPos.x + (CheckPos.y * BoardSize)]);
-            return GridData.GridState;
-        }
-
-        return -1;
-    }
 
     //指定ベクトル方向に挟めているのかチェックする
     public bool CheckPinch(int2 CheckPos,int2 CheckVector,int BaseState , int Count,ref NativeArray<Entity> Entities)
     {
+        if (CheckPos.x < 0 && CheckPos.y < 0)
+        {
+            return false;
+        }
+
         if (!(CheckPos.x < BoardSize && CheckPos.y < BoardSize))
         {
             return false;
@@ -234,7 +302,8 @@ public class BoardMan : ComponentSystem
             return false;
         }
 
-        if (GetGridData(CheckPos + CheckVector, ref Entities) == 0 || GetGridData(CheckPos + CheckVector, ref Entities) == -1)
+        int TargetGridState = GetGridData(CheckPos + CheckVector, ref Entities);
+        if (TargetGridState == 0 || TargetGridState == -1 || TargetGridState == 3)
         {
             return false;
         }
@@ -245,6 +314,11 @@ public class BoardMan : ComponentSystem
     //駒が挟めているかチェックして、挟めていたら反転させる
     public bool CheckReverseState(int2 CheckPos, int2 CheckVector, int BaseState, int Count, ref NativeArray<Entity> Entities)
     {
+        if (CheckPos.x < 0 && CheckPos.y < 0)
+        {
+            return false;
+        }
+
         if (!(CheckPos.x < BoardSize && CheckPos.y < BoardSize))
         {
             return false;
@@ -261,7 +335,8 @@ public class BoardMan : ComponentSystem
             return false;
         }
 
-        if (GetGridData(CheckPos + CheckVector, ref Entities) == 0 || GetGridData(CheckPos + CheckVector, ref Entities) == -1)
+        int TargetGridState = GetGridData(CheckPos + CheckVector, ref Entities);
+        if (TargetGridState == 0 || TargetGridState == -1 || TargetGridState == 3)
         {
             return false;
         }
@@ -275,6 +350,37 @@ public class BoardMan : ComponentSystem
         return false;
     }
 
+    //駒の数をカウントします
+    public void PawnCounter()
+    {
+        int White = 0;
+        int Black = 0;
+        Entities.With(GridEntity).ForEach((ref GridComp GridData) =>
+        {
+            if (GridData.GridState==0)
+            {
+                Black+=1;
+            }
+
+            if (GridData.GridState == 1)
+            {
+                White += 1;
+            }
+        });
+
+        var Config = GetSingleton<BoardState>();
+        Config.WhiteCount = White;
+        Config.BlackCount = Black;
+        SetSingleton<BoardState>(Config);
+
+        if(White+Black>=BoardSize*BoardSize)
+        {
+            var State = GetSingleton<GameState>();
+            State.IsActive = false;
+            SetSingleton<GameState>(State);
+        }
+    }
+
     //盤面のデータを読み取り、色を再描画します。
     public bool RefreshBoardColor()
     {
@@ -286,6 +392,8 @@ public class BoardMan : ComponentSystem
         Color White = new Color(0.9705882f, 0.9705882f, 0.9705882f);
         Color Black = new Color(0.1960784f, 0.1960784f, 0.1960784f);
 
+        Color CanPut = new Color(0.874f, 0.2264659f, 0.140714f);
+
         Entities.With(GridEntity).ForEach((Entity EntityData, ref Sprite2DRenderer Sprite2D, ref GridComp GridData) =>
         {
             //盤面に駒が何もなければそのグリッドに適したBoardの色を設定
@@ -296,6 +404,8 @@ public class BoardMan : ComponentSystem
                 Sprite2D.color = (ColBaseNum + GridData.GridNum.x) % 2 > 0 ? TableColor_1 : TableColor_2;
                 return;
             }
+
+            //設置可能マスの場合は
             //そうでない場合、駒の色を描画
 
             Sprite2D.color = GridData.GridState == 1 ? Black : White;
