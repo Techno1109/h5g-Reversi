@@ -8,4 +8,10 @@ public struct GameState : IComponentData
 
     //  ‚Ç‚¿‚ç‚Ìƒ^[ƒ“‚È‚Ì‚©‚ğŠi”[‚µ‚Ü‚·
     public int NowTurn;
+
+    // Œˆ’…‚ª‚Â‚¢‚½‚©‚Ç‚¤‚©Ši”[‚µ‚Ü‚·
+    public bool GameEnd;
+
+    //ŸÒ‚ğŠi”[‚µ‚Ü‚· 0=–¢Šm’è@1=• 2=”’
+    public int WinnetNum;
 }

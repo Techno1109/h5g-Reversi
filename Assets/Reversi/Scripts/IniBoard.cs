@@ -40,10 +40,18 @@ public class IniBoard : ComponentSystem
         {
             return;
         }
+        if (HasSingleton<GameState>() == false)
+        {
+            return;
+        }
+        if (! ( (GridEntity.CalculateLength() > 0) ))
+        {
+            return;
+        }
         var Config = GetSingleton<BoardState>();
         if (GetSingleton<BoardState>().EmitBoard == false)
         {
-            InitBoard();
+           InitBoard();
         }
     }
 
@@ -73,13 +81,16 @@ public class IniBoard : ComponentSystem
 
         var Config = GetSingleton<BoardState>();
         Config.EmitBoard = true;
-        Config.WhiteCount = 0;
+        Config.WhiteCount = 2;
         Config.BlackCount = 2;
+        Config.InitBoard = false;
         SetSingleton<BoardState>(Config);
 
         var State = GetSingleton<GameState>();
         State.IsActive = true;
-        State.NowTurn = 0;
+        State.NowTurn = 1;
+        State.GameEnd = false;
+        State.WinnetNum = 0;
         SetSingleton<GameState>(State);
 
         EntityManager.World.GetExistingSystem<BoardMan>().RefreshBoardColor();

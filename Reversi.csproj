@@ -63,12 +63,21 @@
     <Compile Include="Assets\Reversi\Compornent\BoardState.cs" />
     <Compile Include="Assets\Reversi\Compornent\GameState.cs" />
     <Compile Include="Assets\Reversi\Compornent\GridComp.cs" />
+    <Compile Include="Assets\Reversi\Compornent\TurnTexts.cs" />
+    <Compile Include="Assets\Reversi\Compornent\WinnerTexts.cs" />
     <Compile Include="Assets\Reversi\Scripts\AssemblyInfo.cs" />
     <Compile Include="Assets\Reversi\Scripts\BoardMan.cs" />
+    <Compile Include="Assets\Reversi\Scripts\HudMan.cs" />
     <Compile Include="Assets\Reversi\Scripts\IniBoard.cs" />
     <Compile Include="Assets\Reversi\Tags\ActiveDelete.cs" />
+    <Compile Include="Assets\Reversi\Tags\BlackTag.cs" />
+    <Compile Include="Assets\Reversi\Tags\GameEndWindowTag.cs" />
+    <Compile Include="Assets\Reversi\Tags\NowTurnBg.cs" />
+    <Compile Include="Assets\Reversi\Tags\NowTurnTag.cs" />
     <Compile Include="Assets\Reversi\Tags\ReplayButton.cs" />
     <Compile Include="Assets\Reversi\Tags\TestButton.cs" />
+    <Compile Include="Assets\Reversi\Tags\WhiteTag.cs" />
+    <Compile Include="Assets\Reversi\Tags\WinnerTextTag.cs" />
     <Reference Include="Unity.Collections">
       <HintPath>F:/Git/h5g-Reversi/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
     </Reference>

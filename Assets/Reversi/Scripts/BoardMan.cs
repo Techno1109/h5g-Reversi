@@ -34,14 +34,30 @@ public class BoardMan : ComponentSystem
 
     protected override void OnUpdate()
     {
-        var State = GetSingleton<GameState>();
-
-        if (State.IsActive==false)
+        if (HasSingleton<GameState>() == false)
         {
             return;
         }
 
-        if( ! (GridEntity.CalculateLength() > 0) )
+        if (HasSingleton<BoardState>() == false)
+        {
+            return;
+        }
+        var G_State = GetSingleton<GameState>();
+        var B_State = GetSingleton<BoardState>();
+
+        if (G_State.IsActive==false)
+        {
+            return;
+        }
+
+
+        if (G_State.GameEnd == true)
+        {
+            return;
+        }
+
+        if ( ! (GridEntity.CalculateLength() > 0) )
         {
             return;
         }
@@ -50,7 +66,14 @@ public class BoardMan : ComponentSystem
 
         GetGirdArray(ref GridDatas);
 
-        Entities.With(GridEntity).ForEach((Entity EntityData, ref PointerInteraction GridClickData,ref GridComp GridData) =>
+        if (B_State.InitBoard == false)
+        {
+            CheckCanPut_AllGrid(ref G_State, ref GridDatas);
+            B_State.InitBoard = true;
+            SetSingleton<BoardState>(B_State);
+        }
+
+        Entities.With(GridEntity).ForEach((Entity EntityData, ref PointerInteraction GridClickData, ref GridComp GridData) =>
         {
             if (GridClickData.clicked == true)
             {
@@ -61,13 +84,13 @@ public class BoardMan : ComponentSystem
 
                 var Config = GetSingleton<GameState>();
 
-                if(GridData.GridState==3)
+                if (GridData.GridState == 3)
                 {
                     SetGridData(GridData.GridNum, Config.NowTurn, ref GridDatas);
 
                     Reverse(GridData.GridNum, Config.NowTurn, ref GridDatas);
 
-                    if(CheckCanPut_AllGrid(ref Config,ref GridDatas))
+                    if (CheckCanPut_AllGrid(ref Config, ref GridDatas))
                     {
                         Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
                     }
@@ -127,7 +150,7 @@ public class BoardMan : ComponentSystem
     //指定したグリッドのデータを取得します
     public int GetGridData(int2 CheckPos, ref NativeArray<Entity> Entities)
     {
-        if (CheckPos.x < 0 && CheckPos.y < 0)
+        if (CheckPos.x < 0 || CheckPos.y < 0)
         {
             return -1;
         }
@@ -144,7 +167,7 @@ public class BoardMan : ComponentSystem
     //送られてきた座標にデータを書き換えます。
     public void SetGridData(int2 SetPos,int SetStatus,ref NativeArray<Entity> Entities)
     {
-        if (SetPos.x < 0 && SetPos.y < 0)
+        if (SetPos.x < 0 || SetPos.y < 0)
         {
             return;
         }
@@ -154,8 +177,6 @@ public class BoardMan : ComponentSystem
             GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[SetPos.x + (SetPos.y * BoardSize)]);
             GridData.GridState = SetStatus;
             EntityManager.SetComponentData(Entities[SetPos.x + (SetPos.y * BoardSize)], GridData);
-
-            RefreshBoardColor();
         }
     }
 
@@ -164,14 +185,14 @@ public class BoardMan : ComponentSystem
     //Falseの場合は置かれていない
     public bool CheckGridData(int2 SetPos,ref NativeArray<Entity> Entities)
     {
-        if(SetPos.x < 0 && SetPos.y < 0)
+        if(SetPos.x < 0 || SetPos.y < 0)
         {
             return true;
         }
         if (SetPos.x < BoardSize && SetPos.y < BoardSize)
         {
             GridComp GridData = EntityManager.GetComponentData<GridComp>(Entities[SetPos.x + (SetPos.y * BoardSize)]);
-            if(GridData.GridState==0)
+            if(GridData.GridState==0 || GridData.GridState==3)
             {
                 return false;
             }
@@ -227,8 +248,9 @@ public class BoardMan : ComponentSystem
 
         return false;
     }
+
     //各種グリッドが設置可能かどうかを確認する
-    private bool CheckCanPut_AllGrid(ref GameState State, ref NativeArray<Entity> GridDatas)
+    public bool CheckCanPut_AllGrid(ref GameState State, ref NativeArray<Entity> GridDatas)
     {
         bool CanPut = false;
         for(int x=0;x<BoardSize;x++)
@@ -237,15 +259,25 @@ public class BoardMan : ComponentSystem
             {
                 int2 TargetGrid = new int2(x, y);
 
+                if (CheckGridData(TargetGrid,ref GridDatas))
+                {
+                    continue;
+                }
+
+
                 if (CheckCanPut(TargetGrid, State.NowTurn, ref GridDatas))
                 {
                     //設置可能の場合、マス目の状態を設置可能マスとして設定する
                     CanPut |= true;
                     SetGridData(TargetGrid, 3, ref GridDatas);
                 }
+                else
+                {
+                    SetGridData(TargetGrid, 0, ref GridDatas);
+                }
             }
         }
-
+        RefreshBoardColor();
         //どこかに設置できる時点で次のターンは有効と考えられる。
         return CanPut;
     }
@@ -282,7 +314,7 @@ public class BoardMan : ComponentSystem
     //指定ベクトル方向に挟めているのかチェックする
     public bool CheckPinch(int2 CheckPos,int2 CheckVector,int BaseState , int Count,ref NativeArray<Entity> Entities)
     {
-        if (CheckPos.x < 0 && CheckPos.y < 0)
+        if (CheckPos.x < 0 || CheckPos.y < 0)
         {
             return false;
         }
@@ -377,6 +409,8 @@ public class BoardMan : ComponentSystem
         {
             var State = GetSingleton<GameState>();
             State.IsActive = false;
+            State.GameEnd = true;
+            State.WinnetNum = Black > White ? 1 : 2;
             SetSingleton<GameState>(State);
         }
     }
@@ -405,7 +439,12 @@ public class BoardMan : ComponentSystem
                 return;
             }
 
-            //設置可能マスの場合は
+            //設置可能マスの場合
+            if(GridData.GridState==3)
+            {
+                Sprite2D.color = CanPut;
+            }
+
             //そうでない場合、駒の色を描画
 
             Sprite2D.color = GridData.GridState == 1 ? Black : White;
