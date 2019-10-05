@@ -90,7 +90,9 @@ public class BoardMan : ComponentSystem
 
                     Reverse(GridData.GridNum, Config.NowTurn, ref GridDatas);
 
-                    if (CheckCanPut_AllGrid(ref Config, ref GridDatas))
+                    Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+
+                    if (!CheckCanPut_AllGrid(ref Config, ref GridDatas))
                     {
                         Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
                     }
@@ -443,6 +445,7 @@ public class BoardMan : ComponentSystem
             if(GridData.GridState==3)
             {
                 Sprite2D.color = CanPut;
+                return;
             }
 
             //ÇªÇ§Ç≈Ç»Ç¢èÍçáÅAãÓÇÃêFÇï`âÊ
