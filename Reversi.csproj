@@ -157,12 +157,6 @@
     <Reference Include="Unity.Tiny.UILayout">
       <HintPath>F:/Git/h5g-Reversi/Library/ScriptAssemblies/Unity.Tiny.UILayout.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Tiny.Video">
-      <HintPath>F:/Git/h5g-Reversi/Library/ScriptAssemblies/Unity.Tiny.Video.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Tiny.VideoNative">
-      <HintPath>F:/Git/h5g-Reversi/Library/ScriptAssemblies/Unity.Tiny.VideoNative.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Tiny.Watchers">
       <HintPath>F:/Git/h5g-Reversi/Library/ScriptAssemblies/Unity.Tiny.Watchers.dll</HintPath>
     </Reference>

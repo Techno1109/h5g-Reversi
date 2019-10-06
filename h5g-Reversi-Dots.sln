@@ -20,20 +20,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unity", "Unity", "{1B6D86D0
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		windows-il2cpp-debug|Default = windows-il2cpp-debug|Default
+		wasm-release|Default = wasm-release|Default
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0F0ACEB3-B132-0312-3A9C-3EED3F4E6ED9}.windows-il2cpp-debug|Default.ActiveCfg = Release|Any CPU
-		{292A681D-8B2E-7852-FB31-6AD3E76DC9B4}.windows-il2cpp-debug|Default.ActiveCfg = windows-il2cpp-debug|Any CPU
-		{292A681D-8B2E-7852-FB31-6AD3E76DC9B4}.windows-il2cpp-debug|Default.Build.0 = windows-il2cpp-debug|Any CPU
-		{42529BFE-C7DC-1D63-1B6F-8F64D2B3E8E5}.windows-il2cpp-debug|Default.ActiveCfg = Release|Any CPU
-		{42529BFE-C7DC-1D63-1B6F-8F64D2B3E8E5}.windows-il2cpp-debug|Default.Build.0 = Release|Any CPU
-		{CDAF4BA9-0F68-B1DD-A38E-0A06EDFD78AB}.windows-il2cpp-debug|Default.ActiveCfg = Release|Any CPU
-		{CDAF4BA9-0F68-B1DD-A38E-0A06EDFD78AB}.windows-il2cpp-debug|Default.Build.0 = Release|Any CPU
-		{7393908E-3929-C1B7-DBE0-F02C66F8F7A8}.windows-il2cpp-debug|Default.ActiveCfg = Release|Any CPU
-		{7393908E-3929-C1B7-DBE0-F02C66F8F7A8}.windows-il2cpp-debug|Default.Build.0 = Release|Any CPU
-		{95BE9475-7513-1D77-602F-DE1C691BFC25}.windows-il2cpp-debug|Default.ActiveCfg = windows-il2cpp-debug|Any CPU
-		{95BE9475-7513-1D77-602F-DE1C691BFC25}.windows-il2cpp-debug|Default.Build.0 = windows-il2cpp-debug|Any CPU
+		{0F0ACEB3-B132-0312-3A9C-3EED3F4E6ED9}.wasm-release|Default.ActiveCfg = Release|Any CPU
+		{292A681D-8B2E-7852-FB31-6AD3E76DC9B4}.wasm-release|Default.ActiveCfg = wasm-release|Any CPU
+		{292A681D-8B2E-7852-FB31-6AD3E76DC9B4}.wasm-release|Default.Build.0 = wasm-release|Any CPU
+		{42529BFE-C7DC-1D63-1B6F-8F64D2B3E8E5}.wasm-release|Default.ActiveCfg = Release|Any CPU
+		{42529BFE-C7DC-1D63-1B6F-8F64D2B3E8E5}.wasm-release|Default.Build.0 = Release|Any CPU
+		{CDAF4BA9-0F68-B1DD-A38E-0A06EDFD78AB}.wasm-release|Default.ActiveCfg = Release|Any CPU
+		{CDAF4BA9-0F68-B1DD-A38E-0A06EDFD78AB}.wasm-release|Default.Build.0 = Release|Any CPU
+		{7393908E-3929-C1B7-DBE0-F02C66F8F7A8}.wasm-release|Default.ActiveCfg = Release|Any CPU
+		{7393908E-3929-C1B7-DBE0-F02C66F8F7A8}.wasm-release|Default.Build.0 = Release|Any CPU
+		{95BE9475-7513-1D77-602F-DE1C691BFC25}.wasm-release|Default.ActiveCfg = wasm-release|Any CPU
+		{95BE9475-7513-1D77-602F-DE1C691BFC25}.wasm-release|Default.Build.0 = wasm-release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +47,6 @@ Global
 		{1D1C93E8-7F82-D831-5960-082115244F13} = {1B6D86D0-12CB-792C-3DA5-CF5BFEE3205F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1B539130-C682-4F73-8686-7EBC2931A1CC}
+		SolutionGuid = {5ACB9677-9183-4CD5-844A-4D6471FA518F}
 	EndGlobalSection
 EndGlobal

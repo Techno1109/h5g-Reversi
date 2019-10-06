@@ -95,6 +95,7 @@ public class BoardMan : ComponentSystem
                     if (!CheckCanPut_AllGrid(ref Config, ref GridDatas))
                     {
                         Config.NowTurn = Config.NowTurn == 1 ? 2 : 1;
+                        CheckCanPut_AllGrid(ref Config, ref GridDatas);
                     }
 
                     SetSingleton<GameState>(Config);
@@ -391,12 +392,12 @@ public class BoardMan : ComponentSystem
         int Black = 0;
         Entities.With(GridEntity).ForEach((ref GridComp GridData) =>
         {
-            if (GridData.GridState==0)
+            if (GridData.GridState==1)
             {
                 Black+=1;
             }
 
-            if (GridData.GridState == 1)
+            if (GridData.GridState == 2)
             {
                 White += 1;
             }

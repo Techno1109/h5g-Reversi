@@ -35,9 +35,6 @@
         "Unity.Tiny.Tweens",
         "Unity.Tiny.UIControls",
         "Unity.Tiny.UILayout",
-        "Unity.Tiny.Video",
-        "Unity.Tiny.VideoHTML",
-        "Unity.Tiny.VideoNative",
         "Unity.Tiny.Watchers"
     ],
     "optionalUnityReferences": [],
